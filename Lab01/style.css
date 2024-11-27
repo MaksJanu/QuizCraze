@@ -1,0 +1,22 @@
+body {
+  margin: 50px;
+}
+body #search-section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+body #search-section #pokemon-logo {
+  width: 300px;
+  height: 150px;
+}
+body #search-section h3 {
+  color: cadetblue;
+  font-size: 2em;
+}
+body #search-section #search {
+  width: 300px;
+  height: 30px;
+  margin: 10px;
+}/*# sourceMappingURL=style.css.map */

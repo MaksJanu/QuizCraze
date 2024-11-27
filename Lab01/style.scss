@@ -1,0 +1,25 @@
+body {
+    margin: 50px;
+    #search-section {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+
+        #pokemon-logo {
+            width: 300px;
+            height: 150px;
+        }
+
+        h3 {
+            color: cadetblue;
+            font-size: 2em;
+        }
+
+        #search {
+            width: 300px;
+            height: 30px;
+            margin: 10px;
+        }
+    }
+}
