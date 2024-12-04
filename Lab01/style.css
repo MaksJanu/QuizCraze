@@ -1,5 +1,9 @@
+@import url("https://fonts.cdnfonts.com/css/pokemon-solid");
 body {
-  margin: 50px;
+  font-family: "Pokemon Solid", sans-serif;
+  background-color: #52ACFF;
+  background-image: linear-gradient(45deg, #52ACFF 25%, #fdd067 100%);
+  scroll-behavior: smooth;
 }
 body #search-section {
   display: flex;
@@ -8,15 +12,134 @@ body #search-section {
   flex-direction: column;
 }
 body #search-section #pokemon-logo {
-  width: 300px;
-  height: 150px;
+  width: 320px;
+  height: 160px;
 }
 body #search-section h3 {
-  color: cadetblue;
+  color: #045497;
   font-size: 2em;
+  text-shadow: 4px 4px #ffc929, 4px 4px black;
+  letter-spacing: 4px;
 }
-body #search-section #search {
+body #search-section #search-bar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+body #search-section #search-bar #search-input {
   width: 300px;
   height: 30px;
-  margin: 10px;
+  border-radius: 10px 0 0 10px;
+  border: solid #045497;
+}
+body #search-section #search-bar button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  width: 30px;
+  height: 30px;
+  padding: 16px;
+  border: solid #045497;
+  border-left: none;
+  border-radius: 0 10px 10px 0;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  background-color: #ffc82a;
+}
+body #search-section #search-bar button:hover {
+  background-color: #f0f0f0;
+  transform: scale(1.05);
+  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
+}
+body #search-section #search-bar button i {
+  display: flex;
+  font-size: 21px;
+  justify-content: center;
+  align-items: center;
+  color: #045497;
+}
+body #pokemon-list {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 30px;
+  margin: 40px auto 10px auto;
+  height: 50%;
+  width: 50%;
+}
+body #pokemon-list .pokemon-card {
+  background: radial-gradient(circle, rgb(238, 236, 174) 0%, rgb(148, 212, 233) 100%);
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  text-align: center;
+  padding: 15px;
+  cursor: pointer;
+  border: 3px solid #80C4E9;
+  letter-spacing: 3px;
+  transition: all 0.2s ease;
+}
+body #pokemon-list .pokemon-card:hover {
+  background-color: #f0f0f0;
+  transform: scale(1.1);
+  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
+}
+body #pokemon-list .pokemon-card img {
+  max-width: 130px;
+  height: 130px;
+}
+body #pokemon-list .pokemon-card h3 {
+  text-transform: capitalize;
+}
+body #pokemon-details {
+  display: none;
+  justify-content: center;
+  align-items: center;
+  width: 250px;
+  min-height: 300px;
+  background: radial-gradient(circle, rgb(34, 193, 195) 0%, rgb(253, 187, 45) 100%);
+  margin: 20px auto;
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: solid #55c0a0;
+}
+body #pokemon-details:hover {
+  background-color: #f0f0f0;
+  transform: scale(1.05);
+  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
+}
+body #pokemon-details .detail-container {
+  width: 100%;
+}
+body #pokemon-details .detail-container .detail-header {
+  text-align: center;
+  margin-bottom: 10px;
+}
+body #pokemon-details .detail-container .detail-header h2 {
+  font-size: 1.2em;
+  margin: 0 0 5px 0;
+  text-transform: capitalize;
+}
+body #pokemon-details .detail-container .detail-header img {
+  width: 180px;
+  height: 180px;
+}
+body #pokemon-details .detail-container .detail-types, body #pokemon-details .detail-container .detail-stats, body #pokemon-details .detail-container .detail-parameters {
+  background-color: #E5E1DA;
+  padding: 8px;
+  margin-bottom: 8px;
+  border-radius: 6px;
+}
+body #pokemon-details .detail-container .detail-types h3, body #pokemon-details .detail-container .detail-stats h3, body #pokemon-details .detail-container .detail-parameters h3 {
+  font-size: 0.9em;
+  margin: 0 0 5px 0;
+}
+body #pokemon-details .detail-container .detail-types p, body #pokemon-details .detail-container .detail-types li, body #pokemon-details .detail-container .detail-stats p, body #pokemon-details .detail-container .detail-stats li, body #pokemon-details .detail-container .detail-parameters p, body #pokemon-details .detail-container .detail-parameters li {
+  font-size: 0.8em;
+  margin: 3px 0;
+}
+body #pokemon-details .detail-container .detail-types ul, body #pokemon-details .detail-container .detail-stats ul, body #pokemon-details .detail-container .detail-parameters ul {
+  margin: 0;
+  padding-left: 15px;
 }/*# sourceMappingURL=style.css.map */
