@@ -2,7 +2,6 @@ const pokemonList = document.getElementById("pokemon-list");
 const pokemonDetails = document.getElementById("pokemon-details");
 
 
-
 const fetchData = async () => {
     try {
         const response = await fetch("https://pokeapi.co/api/v2/pokemon?limit=20")
@@ -50,7 +49,14 @@ const displayPokemons = pokemons => {
             <h4>Nr: ${pokemon.number}</h4>
             `;
 
-        card.addEventListener("click", () => showPokemonDetails(pokemon))
+        card.addEventListener("click", () => {
+            showPokemonDetails(pokemon)
+            window.scrollTo({
+                top: 200,
+                left: 0,
+                behavior: "smooth",
+            })
+        })
         pokemonList.appendChild(card)
     })
 }
