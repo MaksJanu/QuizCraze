@@ -4,9 +4,6 @@ let searchedValue = null
 
 
 const App = () => {
-    let pokemons = [];
-    let selectedPokemon = null;
-
 
     const fetchData = async () => {
         try {
@@ -99,7 +96,10 @@ const PokemonList = ({ pokemons, onPokemonClick }) => {
 
 const PokemonDetails = ({ pokemon }) => {
     return (
-        <div id="pokemon-details" onClick={() => document.getElementById("pokemon-details").style.display = "none"}>
+        <div id="pokemon-details" onClick={() => {
+            document.getElementById("pokemon-details").style.display = "none"
+            console.log(pokemon)
+            }}>
             <div className="detail-header">
                 <h2>{pokemon.name}</h2>
                 <img src={pokemon.image2} alt={pokemon.name} />
