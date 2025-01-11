@@ -1,6 +1,5 @@
 @import url('https://fonts.cdnfonts.com/css/pokemon-solid');
 
-
 body {
     margin: 0;
     padding: 0;
@@ -76,6 +75,24 @@ body {
                 justify-content: center;
                 align-items: center;
                 flex-direction: column;
+
+                #filter-section {
+                    display: flex;
+                    gap: 1rem;
+                    margin-top: 1rem;
+                    align-items: center;
+                }
+                
+                #filter-section select,
+                #filter-section input {
+                    padding: 0.5rem;
+                    border-radius: 4px;
+                    border: 1px solid #ccc;
+                }
+                
+                #filter-section input[type="number"] {
+                    width: 80px;
+                }
             }
 
             #pokemon-logo {
@@ -165,6 +182,100 @@ body {
                     h3 {
                         text-transform: capitalize;
                     }
+                }
+            }
+
+            #pokemon-details {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                width: 250px;
+                min-height: 300px;
+                background: radial-gradient(circle, rgba(34,193,195,1) 0%, rgba(253,187,45,1) 100%);
+                margin: 20px auto;
+                padding: 15px;
+                border-radius: 10px;
+                box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+                cursor: pointer;
+                transition: all 0.2s ease;
+                border: solid #55c0a0;
+            
+                &:hover {
+                    background-color: #f0f0f0;
+                    transform: scale(1.05);
+                    box-shadow: 0 6px 8px rgba(0,0,0,0.2);
+                }
+            
+                .detail-container {
+                    width: 100%;
+                    
+                    .detail-header {
+                        text-align: center;
+                        margin-bottom: 10px;
+                        
+                        h2 {
+                            font-size: 1.2em;
+                            margin: 0 0 5px 0;
+                            text-transform: capitalize;
+                        }
+                        
+                        img {
+                            width: 180px;
+                            height: 180px;
+                        }
+                    }
+                    
+                    .detail-types, .detail-stats, .detail-parameters {
+                        background-color: #E5E1DA;
+                        padding: 8px;
+                        margin-bottom: 8px;
+                        border-radius: 6px;
+                        
+                        h3 {
+                            font-size: 0.9em;
+                            margin: 0 0 5px 0;
+                        }
+                        
+                        p, li {
+                            font-size: 0.8em;
+                            margin: 3px 0;
+                        }
+                        
+                        ul {
+                            margin: 0;
+                            padding-left: 15px;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    .favourites-main {
+        #pokemon-list {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 30px;
+            margin: 40px auto 10px auto;
+            height: 50%;
+            width: 80%;
+    
+            .pokemon-card {
+                background: radial-gradient(circle, rgba(238,236,174,1) 0%, rgba(148,212,233,1) 100%);
+                border-radius: 10px;
+                box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+                text-align: center;
+                padding: 15px;
+                cursor: pointer;
+                border: 3px solid #80C4E9;
+                letter-spacing: 3px;
+                transition: all 0.2s ease;
+    
+                &:hover {
+                    background-color: #f0f0f0;
+                    transform: scale(1.1);
+                    box-shadow: 0 6px 8px rgba(0,0,0,0.2);
                 }
             }
         }

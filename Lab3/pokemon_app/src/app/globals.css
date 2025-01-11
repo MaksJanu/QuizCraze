@@ -60,6 +60,21 @@ body main #pokemon-list-section #search-section {
   align-items: center;
   flex-direction: column;
 }
+body main #pokemon-list-section #search-section #filter-section {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+  align-items: center;
+}
+body main #pokemon-list-section #search-section #filter-section select,
+body main #pokemon-list-section #search-section #filter-section input {
+  padding: 0.5rem;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+body main #pokemon-list-section #search-section #filter-section input[type=number] {
+  width: 80px;
+}
 body main #pokemon-list-section #pokemon-logo {
   width: 320px;
   height: 160px;
@@ -137,4 +152,83 @@ body main #pokemon-list-section #pokemon-list .pokemon-card img {
 }
 body main #pokemon-list-section #pokemon-list .pokemon-card h3 {
   text-transform: capitalize;
+}
+body main #pokemon-list-section #pokemon-details {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 250px;
+  min-height: 300px;
+  background: radial-gradient(circle, rgb(34, 193, 195) 0%, rgb(253, 187, 45) 100%);
+  margin: 20px auto;
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: solid #55c0a0;
+}
+body main #pokemon-list-section #pokemon-details:hover {
+  background-color: #f0f0f0;
+  transform: scale(1.05);
+  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
+}
+body main #pokemon-list-section #pokemon-details .detail-container {
+  width: 100%;
+}
+body main #pokemon-list-section #pokemon-details .detail-container .detail-header {
+  text-align: center;
+  margin-bottom: 10px;
+}
+body main #pokemon-list-section #pokemon-details .detail-container .detail-header h2 {
+  font-size: 1.2em;
+  margin: 0 0 5px 0;
+  text-transform: capitalize;
+}
+body main #pokemon-list-section #pokemon-details .detail-container .detail-header img {
+  width: 180px;
+  height: 180px;
+}
+body main #pokemon-list-section #pokemon-details .detail-container .detail-types, body main #pokemon-list-section #pokemon-details .detail-container .detail-stats, body main #pokemon-list-section #pokemon-details .detail-container .detail-parameters {
+  background-color: #E5E1DA;
+  padding: 8px;
+  margin-bottom: 8px;
+  border-radius: 6px;
+}
+body main #pokemon-list-section #pokemon-details .detail-container .detail-types h3, body main #pokemon-list-section #pokemon-details .detail-container .detail-stats h3, body main #pokemon-list-section #pokemon-details .detail-container .detail-parameters h3 {
+  font-size: 0.9em;
+  margin: 0 0 5px 0;
+}
+body main #pokemon-list-section #pokemon-details .detail-container .detail-types p, body main #pokemon-list-section #pokemon-details .detail-container .detail-types li, body main #pokemon-list-section #pokemon-details .detail-container .detail-stats p, body main #pokemon-list-section #pokemon-details .detail-container .detail-stats li, body main #pokemon-list-section #pokemon-details .detail-container .detail-parameters p, body main #pokemon-list-section #pokemon-details .detail-container .detail-parameters li {
+  font-size: 0.8em;
+  margin: 3px 0;
+}
+body main #pokemon-list-section #pokemon-details .detail-container .detail-types ul, body main #pokemon-list-section #pokemon-details .detail-container .detail-stats ul, body main #pokemon-list-section #pokemon-details .detail-container .detail-parameters ul {
+  margin: 0;
+  padding-left: 15px;
+}
+body .favourites-main #pokemon-list {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 30px;
+  margin: 40px auto 10px auto;
+  height: 50%;
+  width: 80%;
+}
+body .favourites-main #pokemon-list .pokemon-card {
+  background: radial-gradient(circle, rgb(238, 236, 174) 0%, rgb(148, 212, 233) 100%);
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  text-align: center;
+  padding: 15px;
+  cursor: pointer;
+  border: 3px solid #80C4E9;
+  letter-spacing: 3px;
+  transition: all 0.2s ease;
+}
+body .favourites-main #pokemon-list .pokemon-card:hover {
+  background-color: #f0f0f0;
+  transform: scale(1.1);
+  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
 }/*# sourceMappingURL=globals.css.map */

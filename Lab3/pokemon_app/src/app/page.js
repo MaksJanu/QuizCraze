@@ -9,7 +9,7 @@ export default function Landing() {
                 <Link href='/pokemon'>Pokemon list</Link>
             </p>
             <p className='link'>
-                <Link href='/favorites'>Favourites</Link>
+                <Link href='/favourites'>Favourites</Link>
             </p>
         </div>
     </div>

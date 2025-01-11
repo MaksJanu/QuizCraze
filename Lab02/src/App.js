@@ -39,7 +39,7 @@ const App = () => {
 
     const handlePokemonClick = (pokemon) => {
         selectedPokemon = pokemon;
-        render();
+        root.render(<App />);
     };
 
     const render = () => {
@@ -79,8 +79,10 @@ const SearchSection = () => {
     );
 };
 
+
+// W tym samym pliku, zaktualizuj PokemonList
 const PokemonList = ({ pokemons, onPokemonClick }) => {
-    const pokemonsList = searchedValue !== null ? pokemons.filter(p => p.name.toLowerCase().includes(searchedValue.toLowerCase())) : pokemons
+    const pokemonsList = searchedValue !== null ? pokemons.filter(p => p.name.toLowerCase().includes(searchedValue.toLowerCase())) : pokemons;
     return (
         <div id="pokemon-list">
             {pokemonsList.map(pokemon => (

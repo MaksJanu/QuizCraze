@@ -1,6 +1,5 @@
 import Navigation from "../components/Navigation";
-// import SearchSection from ""
-// import PokemonList from "../components/PokemonList"
+
 import "../globals.css";
 
 

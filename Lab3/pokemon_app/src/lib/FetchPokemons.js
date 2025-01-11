@@ -1,8 +1,8 @@
 
 
-const fetchData = async () => {
+const fetchData = async (limit = 20) => {
     try {
-        const response = await fetch(`https://pokeapi.co/api/v2/pokemon?limit=20`);
+        const response = await fetch(`https://pokeapi.co/api/v2/pokemon?limit=${limit}`);
         if (!response.ok) {
             throw new Error("Network response was not ok!");
         }
