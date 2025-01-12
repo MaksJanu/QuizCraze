@@ -4,7 +4,7 @@ import fetchData from "@/lib/FetchPokemons";
 import Image from "next/image";
 import { useState, useEffect } from "react";
 
-export default function PokemonList({ onPokemonSelect, searchQuery, selectedType, limit }) {
+export default function PokemonList({ onPokemonSelect, onCompareSelect, searchQuery, selectedType, limit, comparison }) {
     const [pokemonsList, setPokemonsList] = useState([]);
 
     useEffect(() => {
@@ -27,16 +27,25 @@ export default function PokemonList({ onPokemonSelect, searchQuery, selectedType
         window.scrollTo({ top: 100, behavior: 'smooth' });
     };
 
+    useEffect(() => {
+        if (comparison.length === 2) {
+            scrollToTop();
+        }
+    }, [comparison]);
+
     return (
         <div id="pokemon-list">
             {filteredPokemons.map(pokemon => (
                 <div key={pokemon.name} className="pokemon-card" onClick={() => {
                     onPokemonSelect(pokemon);
-                    scrollToTop();
-                    }}>
+                }}>
                     <Image src={pokemon.image1} alt={pokemon.name} width={96} height={96} priority />
                     <h3>{pokemon.name}</h3>
                     <h4>Nr: {pokemon.number}</h4>
+                    <button onClick={(e) => {
+                        e.stopPropagation();
+                        onCompareSelect(pokemon);
+                    }}>Porównaj</button>
                 </div>
             ))}
         </div>
