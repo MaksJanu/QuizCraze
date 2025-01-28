@@ -26,6 +26,11 @@ const userSchema = new mongoose.Schema({
     sparse: true,
   },
 
+  profilePicture: { 
+    data: Buffer,
+    contentType: String,
+  },
+
   nickname: {
     type: String,
     required: true,
@@ -54,8 +59,9 @@ const userSchema = new mongoose.Schema({
   },
 
   quizzesCreated: {
-    type: Number,
+    type: mongoose.Schema.Types.ObjectId,
     default: 0,
+    ref: "Quiz",
   },
 });
 
