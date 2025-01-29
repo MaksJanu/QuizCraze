@@ -1,0 +1,22 @@
+body {
+    color: var(--foreground);
+    background: var(--background);
+    font-family: Arial, Helvetica, sans-serif;
+    margin: 0;
+    padding: 0;
+    line-height: 1.6;
+    background-color: white;
+  
+    // Default styles for mobile devices
+    font-size: 16px;
+  
+    // Styles for tablets
+    @media (min-width: 600px) {
+      font-size: 18px;
+    }
+  
+    // Styles for desktops
+    @media (min-width: 1024px) {
+      font-size: 20px;
+    }
+  }
