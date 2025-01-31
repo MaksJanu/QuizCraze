@@ -10,11 +10,36 @@ export default {
   theme: {
     extend: {
       colors: {
-        background: "var(--background)",
-        foreground: "var(--foreground)",
+        nav: {
+          primary: '#4f46e5',    // główny kolor
+          secondary: '#D9EAFD',
+          third: "#F8FAFC",  // dodatkowy
+          accent: '#BFBBA9',    // akcent
+          dark: '#BCCCDC',      // ciemny
+          light: '#9AA6B2'      // jasny
+        },
+
+        auth: {
+          primary: '#F8FAFC',    // główny kolor
+          secondary: '#D9EAFD',  // dodatkowy
+          accent: '#BFBBA9',    // akcent
+          dark: '#BCCCDC',      // ciemny
+          light: '#9AA6B2'      // jasny
+        },
+
+        quiz: {
+          primary: '#F8FAFC',    // główny kolor
+          secondary: '#D9EAFD',  // dodatkowy
+          accent: '#BFBBA9',    // akcent
+          dark: '#BCCCDC',      // ciemny
+          light: '#9AA6B2'      // jasny
+        },
+
+        background: "#F8FAFC",
+        foreground: "#BCCCDC",
       },
     },
   },
-  plugins: [],
+  plugins: [daisyui],
 
 };
