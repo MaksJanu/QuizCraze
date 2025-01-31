@@ -1,92 +1,150 @@
 'use client'
 
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import axios from 'axios';
 import "./Navigation.scss";
 
 export default function Navigation() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const router = useRouter();
+
+  useEffect(() => {
+    const checkAuth = () => {
+      const authStatus = localStorage.getItem('isAuthenticated') === 'true';
+      setIsAuthenticated(authStatus);
+    };
+
+    checkAuth();
+
+    const handleAuthChange = () => {
+      checkAuth();
+    };
+
+    window.addEventListener('authStateChange', handleAuthChange);
+
+
+    return () => {
+      window.removeEventListener('authStateChange', handleAuthChange);
+    };
+  }, []);
+
+  axios.defaults.baseURL = 'http://localhost:4000/api';
+  axios.defaults.withCredentials = true;
+
+  const handleLogout = async () => {
+    try {
+      await axios.post('/auth/logout');
+      setIsAuthenticated(false);
+      localStorage.removeItem('isAuthenticated');
+      window.dispatchEvent(new Event('authStateChange'));
+      router.push('/');
+    } catch (error) {
+      console.error('Error during logout:', error);
+    }
+  };
+
 
   return (
-    <div className="navbar bg-nav-primary text-nav-third shadow-lg">
-      <div className="flex-1">
-        <Link 
-          href="/"
-          className="btn btn-ghost normal-case text-lg font-extrabold tracking-wider"
-        >
-          <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#A7D129] to-[#8CB122] 
-            hover:from-[#96BC24] hover:to-[#7BA01E] transition-all duration-300 text-stroke-white inline-block"
-            style={{ textShadow: '0 0 2px #a4cd28' }}>
-            QuizCraze
-          </span>
-        </Link>
-        
-        <div className="hidden md:flex ml-6 gap-4">
-          <Link href="/quizzes" className="link link-hover opacity-75 hover:opacity-100 transition-opacity text-sm">
-            Explore
-          </Link>
-          <Link href="/leaderboard" className="link link-hover opacity-75 hover:opacity-100 transition-opacity text-sm">
-            Leaderboard
-          </Link>
-        </div>
-      </div>
+    <nav className="backdrop-blur-md bg-opacity-70 bg-nav-primary border-b border-gray-800/10 
+      shadow-[0_4px_30px_rgba(0,0,0,0.1)] sticky top-0 z-50">
+      <div className="max-w-7xl mx-auto px-6 sm:px-8">
+        <div className="flex justify-between h-20 items-center">
+          {/* Logo and primary navigation */}
+          <div className="flex items-center gap-10">
+            <Link 
+              href="/"
+              className="flex items-center group"
+            >
+              <span className="text-xl font-black tracking-wider bg-clip-text text-transparent 
+                bg-gradient-to-r from-[#A7D129] to-[#8CB122] group-hover:from-[#BDE942] 
+                group-hover:to-[#A7D129] transition-all duration-500 ease-out"
+                style={{ 
+                  textShadow: '0 0 20px rgba(167, 209, 41, 0.3)',
+                  letterSpacing: '0.05em'
+                }}>
+                QuizCraze
+              </span>
+            </Link>
 
-      <div className="flex-none gap-3">
-        <Link 
-          href="/create-quiz"
-          className="btn btn-sm btn-outline text-xs hover:bg-[#A7D129] hover:border-[#A7D129] hidden sm:flex border-2"
-        >
-          Create Quiz
-        </Link>
-        <div className="dropdown dropdown-end">
-          <div 
-            tabIndex={0} 
-            role="button" 
-            className="btn btn-ghost btn-circle avatar ring-2 ring-offset-1 ring-[#A7D129] ring-opacity-50"
-          >
-            <div className="w-8 rounded-full">
-              <img
-                src={isAuthenticated ? "/avatar-placeholder.png" : "/guest-avatar.png"}
-                alt="User avatar"
-                className="object-cover"
-              />
+            <div className="hidden md:flex items-center gap-8">
+              <Link 
+                href="/quizzes" 
+                className="relative text-sm font-medium opacity-85 hover:opacity-100 transition-all 
+                  duration-300 hover:text-[#A7D129] after:absolute after:bottom-0 after:left-0 
+                  after:w-0 hover:after:w-full after:h-0.5 after:bg-[#A7D129] after:transition-all 
+                  after:duration-300"
+              >
+                Explore
+              </Link>
+              <Link 
+                href="/leaderboard" 
+                className="relative text-sm font-medium opacity-85 hover:opacity-100 transition-all 
+                  duration-300 hover:text-[#A7D129] after:absolute after:bottom-0 after:left-0 
+                  after:w-0 hover:after:w-full after:h-0.5 after:bg-[#A7D129] after:transition-all 
+                  after:duration-300"
+              >
+                Leaderboard
+              </Link>
             </div>
           </div>
-          <ul
-            tabIndex={0}
-            className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-48 p-2 shadow text-sm">
+
+          {/* Auth navigation */}
+          <div className="flex items-center gap-6">
             {!isAuthenticated ? (
-              <>
-                <li>
-                  <Link href="/auth/login" className="flex items-center gap-2 text-sm">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
-                      <path fillRule="evenodd" d="M3 3a1 1 0 011 1v12a1 1 0 11-2 0V4a1 1 0 011-1zm7.707 3.293a1 1 0 010 1.414L9.414 9H17a1 1 0 110 2H9.414l1.293 1.293a1 1 0 01-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                    Login
-                  </Link>
-                </li>
-              </>
+              <Link
+                href="/auth/login"
+                className="relative inline-flex items-center px-6 py-2.5 border-2 border-[#A7D129] 
+                  text-sm font-semibold rounded-lg text-[#A7D129] bg-transparent overflow-hidden
+                  transition-all duration-300 hover:text-white group"
+              >
+                <span className="relative z-10">Login</span>
+                <div className="absolute inset-0 bg-[#A7D129] transform -translate-x-full 
+                  group-hover:translate-x-0 transition-transform duration-300"></div>
+              </Link>
             ) : (
               <>
-                <li>
-                  <Link href="/profile" className="justify-between text-sm">
+                <Link 
+                  href="/create-quiz"
+                  className="hidden sm:inline-flex items-center px-4 py-2 text-sm font-medium 
+                    rounded-lg text-[#A7D129] hover:bg-[#A7D129]/10 transition-all duration-300"
+                >
+                  Create Quiz
+                </Link>
+                <div className="h-6 w-px bg-gray-200 opacity-20" />
+                <div className="flex items-center gap-6">
+                  <Link 
+                    href="/profile"
+                    className="relative text-sm font-medium opacity-85 hover:opacity-100 
+                      transition-all duration-300 hover:text-[#A7D129] after:absolute 
+                      after:bottom-0 after:left-0 after:w-0 hover:after:w-full after:h-0.5 
+                      after:bg-[#A7D129] after:transition-all after:duration-300"
+                  >
                     Profile
-                    <span className="badge badge-xs badge-success">New</span>
                   </Link>
-                </li>
-                <li>
-                  <Link href="/settings" className="text-sm">Dashboard</Link>
-                </li>
-                <li className="mt-2 pt-2 border-t border-base-200">
-                  <Link href="/" onClick={() => setIsAuthenticated(false)} className="text-error text-sm">
+                  <Link 
+                    href="/settings"
+                    className="relative text-sm font-medium opacity-85 hover:opacity-100 
+                      transition-all duration-300 hover:text-[#A7D129] after:absolute 
+                      after:bottom-0 after:left-0 after:w-0 hover:after:w-full after:h-0.5 
+                      after:bg-[#A7D129] after:transition-all after:duration-300"
+                  >
+                    Dashboard
+                  </Link>
+                  <button
+                    onClick={handleLogout}
+                    className="text-sm font-medium text-red-500 hover:text-red-400 
+                      transition-all duration-300 hover:scale-105"
+                  >
                     Logout
-                  </Link>
-                </li>
+                  </button>
+                </div>
               </>
             )}
-          </ul>
+          </div>
         </div>
       </div>
-    </div>
+    </nav>
   );
 }
