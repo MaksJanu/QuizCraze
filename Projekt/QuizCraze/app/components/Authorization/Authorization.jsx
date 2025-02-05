@@ -7,6 +7,13 @@ import Link from 'next/link';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
 
+
+// Configure axios
+axios.defaults.baseURL = 'http://localhost:4000/api';
+axios.defaults.withCredentials = true;
+
+
+
 // Validation schemas
 const RegistrationSchema = Yup.object().shape({
   firstName: Yup.string().required('First Name is required'),
@@ -51,10 +58,6 @@ export default function Authorization({ isRegistering }) {
 
 
 
-  // Configure axios
-  axios.defaults.baseURL = 'http://localhost:4000/api';
-  axios.defaults.withCredentials = true;
-
   const handleAuth = async (values) => {
     try {
       setIsLoading(true);
@@ -71,13 +74,9 @@ export default function Authorization({ isRegistering }) {
         });
 
         if (response.data.userData) {
-          setSuccessMessage('User successfully registered and logged in');
-          // Update auth state immediately
-          setIsAuthenticated(true);
-          localStorage.setItem('isAuthenticated', 'true');
-          // Dispatch custom event
-          window.dispatchEvent(new Event('authStateChange'));
-          router.push('/');
+          setSuccessMessage('User successfully registered:');
+          router.push('/auth/login');
+          
         }
       } else {
         const response = await axios.post('/auth/login', {
@@ -307,6 +306,14 @@ export default function Authorization({ isRegistering }) {
                     isRegistering ? 'Create Account' : 'Sign in'
                   )}
                 </button>
+                <div className="mt-4 text-center">
+                  <Link 
+                    href="/auth/verify" 
+                    className="text-sm font-medium text-[#A7D129] hover:text-[#8CB122] transition-colors"
+                  >
+                    Verify Email
+                  </Link>
+                </div>
               </div>
             </form>
 
@@ -358,6 +365,7 @@ export default function Authorization({ isRegistering }) {
           </div>
         </div>
       </div>
+
     </div>
   );
 }
