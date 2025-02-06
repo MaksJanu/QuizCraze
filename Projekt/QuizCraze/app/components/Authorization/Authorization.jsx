@@ -88,6 +88,7 @@ export default function Authorization({ isRegistering }) {
           setSuccessMessage('User successfully logged in');
           // Update auth state immediately
           setIsAuthenticated(true);
+          localStorage.setItem('userId', response.data.userData._id);
           localStorage.setItem('isAuthenticated', 'true');
           // Dispatch custom event
           window.dispatchEvent(new Event('authStateChange'));

@@ -37,6 +37,7 @@ export default function Navigation() {
     try {
       await axios.post('/auth/logout');
       setIsAuthenticated(false);
+      localStorage.removeItem('userId');
       localStorage.removeItem('isAuthenticated');
       window.dispatchEvent(new Event('authStateChange'));
       router.push('/');
@@ -124,7 +125,7 @@ export default function Navigation() {
                     Profile
                   </Link>
                   <Link 
-                    href="/settings"
+                    href="/dashboard"
                     className="relative text-sm font-medium opacity-85 hover:opacity-100 
                       transition-all duration-300 hover:text-[#A7D129] after:absolute 
                       after:bottom-0 after:left-0 after:w-0 hover:after:w-full after:h-0.5 
