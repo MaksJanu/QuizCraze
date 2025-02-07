@@ -71,7 +71,7 @@ export default function Navigation() {
 
             <div className="hidden md:flex items-center gap-8">
               <Link 
-                href="/quizzes" 
+                href="/explore" 
                 className="relative text-sm font-medium opacity-85 hover:opacity-100 transition-all 
                   duration-300 hover:text-[#A7D129] after:absolute after:bottom-0 after:left-0 
                   after:w-0 hover:after:w-full after:h-0.5 after:bg-[#A7D129] after:transition-all 
