@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useReducer, useEffect } from 'react';
 import axios from 'axios';
 import { FaSearch, FaSpinner, FaUndo } from 'react-icons/fa';
 import { useRouter } from 'next/navigation';
@@ -8,26 +8,76 @@ import { useRouter } from 'next/navigation';
 axios.defaults.baseURL = 'http://localhost:4000/api';
 axios.defaults.withCredentials = true;
 
+
+const ACTIONS = {
+  SET_LOADING: 'SET_LOADING',
+  SET_ERROR: 'SET_ERROR',
+  SET_QUIZZES: 'SET_QUIZZES',
+  SET_FILTERED_QUIZZES: 'SET_FILTERED_QUIZZES',
+  SET_CATEGORIES: 'SET_CATEGORIES',
+  SET_SEARCH_TERM: 'SET_SEARCH_TERM',
+  SET_SELECTED_CATEGORY: 'SET_SELECTED_CATEGORY',
+  SET_SELECTED_DIFFICULTY: 'SET_SELECTED_DIFFICULTY',
+  SET_SELECTED_POPULARITY: 'SET_SELECTED_POPULARITY',
+  RESET_FILTERS: 'RESET_FILTERS'
+};
+
+
+const initialState = {
+  quizzes: [],
+  filteredQuizzes: [],
+  loading: true,
+  error: null,
+  searchTerm: '',
+  categories: [],
+  selectedCategory: '',
+  selectedDifficulty: '',
+  selectedPopularity: '',
+};
+
+
+function reducer(state, action) {
+  switch (action.type) {
+    case ACTIONS.SET_LOADING:
+      return { ...state, loading: action.payload };
+    case ACTIONS.SET_ERROR:
+      return { ...state, error: action.payload };
+    case ACTIONS.SET_QUIZZES:
+      return { ...state, quizzes: action.payload };
+    case ACTIONS.SET_FILTERED_QUIZZES:
+      return { ...state, filteredQuizzes: action.payload };
+    case ACTIONS.SET_CATEGORIES:
+      return { ...state, categories: action.payload };
+    case ACTIONS.SET_SEARCH_TERM:
+      return { ...state, searchTerm: action.payload };
+    case ACTIONS.SET_SELECTED_CATEGORY:
+      return { ...state, selectedCategory: action.payload };
+    case ACTIONS.SET_SELECTED_DIFFICULTY:
+      return { ...state, selectedDifficulty: action.payload };
+    case ACTIONS.SET_SELECTED_POPULARITY:
+      return { ...state, selectedPopularity: action.payload };
+    case ACTIONS.RESET_FILTERS:
+      return {
+        ...state,
+        searchTerm: '',
+        selectedCategory: '',
+        selectedDifficulty: '',
+        selectedPopularity: ''
+      };
+    default:
+      return state;
+  }
+}
+
 export default function ExplorePage() {
-  const [quizzes, setQuizzes] = useState([]);
-  const [filteredQuizzes, setFilteredQuizzes] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [categories, setCategories] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState('');
-  const [selectedDifficulty, setSelectedDifficulty] = useState('');
-  const [selectedPopularity, setSelectedPopularity] = useState('');
+  const [state, dispatch] = useReducer(reducer, initialState);
   const router = useRouter();
 
   const difficulties = ['Easy', 'Medium', 'Hard'];
   const popularityOptions = ['Most Popular'];
 
   const resetFilters = () => {
-    setSearchTerm('');
-    setSelectedCategory('');
-    setSelectedDifficulty('');
-    setSelectedPopularity('');
+    dispatch({ type: ACTIONS.RESET_FILTERS });
   };
 
   const isPopular = (quiz, filteredQuizzes, selectedPopularity) => {
@@ -57,14 +107,17 @@ export default function ExplorePage() {
           axios.get('/quiz/all'),
           axios.get('/quiz/categories')
         ]);
-        setQuizzes(quizzesRes.data.data || []);
-        setCategories(categoriesRes.data.data || []);
-        setError(null);
+        dispatch({ type: ACTIONS.SET_QUIZZES, payload: quizzesRes.data.data || [] });
+        dispatch({ type: ACTIONS.SET_CATEGORIES, payload: categoriesRes.data.data || [] });
+        dispatch({ type: ACTIONS.SET_ERROR, payload: null });
       } catch (err) {
-        setError(err.response?.data?.message || 'Failed to load quizzes');
+        dispatch({ 
+          type: ACTIONS.SET_ERROR, 
+          payload: err.response?.data?.message || 'Failed to load quizzes' 
+        });
         console.error('Error fetching data:', err);
       } finally {
-        setLoading(false);
+        dispatch({ type: ACTIONS.SET_LOADING, payload: false });
       }
     };
 
@@ -72,34 +125,34 @@ export default function ExplorePage() {
   }, []);
 
   useEffect(() => {
-    let result = [...quizzes];
+    let result = [...state.quizzes];
 
-    if (searchTerm) {
+    if (state.searchTerm) {
       result = result.filter(quiz => 
-        quiz.name.toLowerCase().includes(searchTerm.toLowerCase())
+        quiz.name.toLowerCase().includes(state.searchTerm.toLowerCase())
       );
     }
 
-    if (selectedCategory) {
+    if (state.selectedCategory) {
       result = result.filter(quiz => 
-        quiz.category?.name === selectedCategory
+        quiz.category?.name === state.selectedCategory
       );
     }
 
-    if (selectedDifficulty) {
+    if (state.selectedDifficulty) {
       result = result.filter(quiz => 
-        quiz.difficulty === selectedDifficulty
+        quiz.difficulty === state.selectedDifficulty
       );
     }
 
-    if (selectedPopularity === 'Most Popular') {
+    if (state.selectedPopularity === 'Most Popular') {
       result.sort((a, b) => b.popularity - a.popularity);
     }
 
-    setFilteredQuizzes(result);
-  }, [quizzes, searchTerm, selectedCategory, selectedDifficulty, selectedPopularity]);
+    dispatch({ type: ACTIONS.SET_FILTERED_QUIZZES, payload: result });
+  }, [state.quizzes, state.searchTerm, state.selectedCategory, state.selectedDifficulty, state.selectedPopularity]);
 
-  if (loading) {
+  if (state.loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <FaSpinner className="animate-spin text-4xl text-[#A7D129]" />
@@ -107,10 +160,10 @@ export default function ExplorePage() {
     );
   }
 
-  if (error) {
+  if (state.error) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <p className="text-red-500 text-xs">{error}</p>
+        <p className="text-red-500 text-xs">{state.error}</p>
       </div>
     );
   }
@@ -131,8 +184,8 @@ export default function ExplorePage() {
               className="block w-full pl-9 pr-3 py-2 text-sm bg-white border border-gray-200 rounded-lg 
                 focus:ring-[#A7D129] focus:border-[#A7D129] transition-all duration-300
                 hover:border-[#A7D129]/20 shadow-sm"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              value={state.searchTerm}
+              onChange={(e) => dispatch({ type: ACTIONS.SET_SEARCH_TERM, payload: e.target.value })}
             />
           </div>
 
@@ -142,11 +195,11 @@ export default function ExplorePage() {
                 className="block w-full py-2 px-3 text-sm bg-white border border-gray-200 rounded-lg
                   focus:ring-[#A7D129] focus:border-[#A7D129] transition-all duration-300
                   hover:border-[#A7D129]/20 cursor-pointer shadow-sm"
-                value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value)}
+                value={state.selectedCategory}
+                onChange={(e) => dispatch({ type: ACTIONS.SET_SELECTED_CATEGORY, payload: e.target.value })}
               >
                 <option value="">All Categories</option>
-                {categories.map((category) => (
+                {state.categories.map((category) => (
                   <option key={category.name} value={category.name}>
                     {category.name}
                   </option>
@@ -157,8 +210,8 @@ export default function ExplorePage() {
                 className="block w-full py-2 px-3 text-sm bg-white border border-gray-200 rounded-lg
                   focus:ring-[#A7D129] focus:border-[#A7D129] transition-all duration-300
                   hover:border-[#A7D129]/20 cursor-pointer shadow-sm"
-                value={selectedDifficulty}
-                onChange={(e) => setSelectedDifficulty(e.target.value)}
+                value={state.selectedDifficulty}
+                onChange={(e) => dispatch({ type: ACTIONS.SET_SELECTED_DIFFICULTY, payload: e.target.value })}
               >
                 <option value="">All Difficulties</option>
                 {difficulties.map((difficulty) => (
@@ -172,8 +225,8 @@ export default function ExplorePage() {
                 className="block w-full py-2 px-3 text-sm bg-white border border-gray-200 rounded-lg
                   focus:ring-[#A7D129] focus:border-[#A7D129] transition-all duration-300
                   hover:border-[#A7D129]/20 cursor-pointer shadow-sm"
-                value={selectedPopularity}
-                onChange={(e) => setSelectedPopularity(e.target.value)}
+                value={state.selectedPopularity}
+                onChange={(e) => dispatch({ type: ACTIONS.SET_SELECTED_POPULARITY, payload: e.target.value })}
               >
                 <option value="">Sort By</option>
                 {popularityOptions.map((option) => (
@@ -197,13 +250,13 @@ export default function ExplorePage() {
         </div>
 
         <div className="mt-6 overflow-y-auto max-h-[calc(100vh-250px)]">
-          {filteredQuizzes.length === 0 ? (
+          {state.filteredQuizzes.length === 0 ? (
             <div className="text-center py-8">
               <p className="text-gray-500 text-xs">No quizzes found matching your criteria.</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {filteredQuizzes.map((quiz) => (
+              {state.filteredQuizzes.map((quiz) => (
                 <div
                   key={quiz._id}
                   className={`rounded-lg shadow-sm p-4 transition-all duration-300
@@ -211,7 +264,7 @@ export default function ExplorePage() {
                     ${getDifficultyStyles(quiz.difficulty)}`}
                   onClick={() => router.push(`/explore/details/${quiz._id}`)}
                 >
-                  {isPopular(quiz, filteredQuizzes, selectedPopularity) && (
+                  {isPopular(quiz, state.filteredQuizzes, state.selectedPopularity) && (
                     <div className="absolute top-2 right-2 bg-orange-100 
                       text-orange-600 px-2 py-1 rounded-full text-xs font-medium">
                       🔥 Popular

@@ -32,6 +32,9 @@ export default function PlayQuiz() {
   const [quizStartTime, setQuizStartTime] = useState(null);
   const [questionStartTimes, setQuestionStartTimes] = useState({});
   const [showHint, setShowHint] = useState(false);
+  const [leaderboard, setLeaderboard] = useState([]);
+  const [leaderboardError, setLeaderboardError] = useState(null);
+  const [leaderboardLoading, setLeaderboardLoading] = useState(false);
 
 
   useEffect(() => {
@@ -202,12 +205,11 @@ export default function PlayQuiz() {
     try {
       setSubmitting(true);
       setSubmitError(null);
-  
+
       const userId = localStorage.getItem('userId');
       if (!userId) {
         throw new Error('User not authenticated');
       }
-  
 
       const response = await axios.post(`/user/${userId}/stats`, {
         quizId: params.id,
@@ -217,11 +219,7 @@ export default function PlayQuiz() {
         }))
       });
 
-  
-      if (response.status === 201) {
-        router.push('/explore');
-        return response.data.data;
-      } else {
+      if (response.status !== 201) {
         throw new Error(response.data.message || 'Failed to submit quiz results');
       }
     } catch (error) {
@@ -232,9 +230,27 @@ export default function PlayQuiz() {
     }
   };
 
+
+
+  const fetchLeaderboard = async () => {
+    try {
+      setLeaderboardLoading(true);
+      const response = await axios.get(`/ranking/${params.id}/10`); // Fetch top 10 players
+      setLeaderboard(response.data.data);
+    } catch (error) {
+      setLeaderboardError(error.response?.data?.message || 'Failed to load leaderboard');
+    } finally {
+      setLeaderboardLoading(false);
+    }
+  };
+
+
+
+
   useEffect(() => {
     if (gameState === 'finished') {
       submitQuizResults();
+      fetchLeaderboard();
     }
   }, [gameState]);
 
@@ -378,31 +394,106 @@ export default function PlayQuiz() {
           </div>
         )}
 
-        {gameState === 'finished' && (
-          <div className="bg-white/90 backdrop-blur-sm rounded-xl p-8 shadow-lg text-center">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Quiz Completed!</h2>
-            <p className="text-xl text-gray-600 mb-6">
-              Your score: {score} out of {shuffledQuestions.length}
-            </p>
-            <div className="text-4xl font-bold text-[#A7D129] mb-8">
-              {Math.round((score / shuffledQuestions.length) * 100)}%
-            </div>
-            {submitting ? (
-              <div className="flex items-center justify-center gap-2 text-gray-600">
-                <FaSpinner className="animate-spin" />
-                <span>Saving results...</span>
+      {gameState === 'finished' && (
+          <div className="bg-white/90 backdrop-blur-sm rounded-xl p-8 shadow-lg">
+            <div className="text-center">
+              <h2 className="text-3xl font-bold text-gray-900 mb-4">Quiz Completed!</h2>
+              <p className="text-xl text-gray-600 mb-6">
+                Your score: {score} out of {shuffledQuestions.length}
+              </p>
+              <div className="text-4xl font-bold text-[#A7D129] mb-8">
+                {Math.round((score / shuffledQuestions.length) * 100)}%
               </div>
-            ) : submitError ? (
-              <div className="text-red-500 text-sm mb-4">{submitError}</div>
-            ) : (
-              <button
-                onClick={() => router.push('/explore')}
-                className="px-6 py-3 bg-[#A7D129] hover:bg-[#96BC24] text-white 
-                  font-medium rounded-lg transition-colors duration-200"
-              >
-                Back to Explore
-              </button>
-            )}
+              
+              {submitting ? (
+                <div className="flex items-center justify-center gap-2 text-gray-600">
+                  <FaSpinner className="animate-spin" />
+                  <span>Saving results...</span>
+                </div>
+              ) : submitError ? (
+                <div className="text-red-500 text-sm mb-4">{submitError}</div>
+              ) : (
+                <div className="flex justify-center gap-4">
+                  <button
+                    onClick={() => {
+                      setGameState('countdown');
+                      setCountdown(5);
+                      setCurrentQuestionIndex(0);
+                      setScore(0);
+                      setAnswers([]);
+                      setSelectedAnswers([]);
+                      setIsAnswerLocked(false);
+                      setOpenAnswer('');
+                      setShowHint(false);
+                      setQuestionStartTimes({});
+                      setQuizStartTime(null);
+                      setShuffledQuestions(shuffle(quiz.questions));
+                    }}
+                    className="px-6 py-3 bg-[#A7D129] hover:bg-[#96BC24] text-white 
+                      font-medium rounded-lg transition-colors duration-200"
+                  >
+                    Play Again
+                  </button>
+                  <button
+                    onClick={() => router.push('/explore')}
+                    className="px-6 py-3 border-2 border-[#A7D129] text-[#A7D129] 
+                      hover:bg-[#A7D129] hover:text-white font-medium rounded-lg 
+                      transition-colors duration-200"
+                  >
+                    Return to Quizzes
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* Leaderboard Section */}
+            <div className="mt-12 border-t pt-8">
+              <h3 className="text-xl font-bold text-gray-900 mb-6">Leaderboard</h3>
+              {leaderboardLoading ? (
+                <div className="flex justify-center">
+                  <FaSpinner className="animate-spin text-2xl text-[#A7D129]" />
+                </div>
+              ) : leaderboardError ? (
+                <div className="text-red-500 text-center">{leaderboardError}</div>
+              ) : (
+                <div className="space-y-4">
+                  {leaderboard.map((entry) => (
+                    <div 
+                      key={entry.userId} 
+                      className="flex items-center justify-between p-4 bg-gray-50 rounded-lg"
+                    >
+                      <div className="flex items-center gap-4">
+                        <span className={`text-lg font-bold ${
+                          entry.rank === 1 ? 'text-yellow-500' :
+                          entry.rank === 2 ? 'text-gray-500' :
+                          entry.rank === 3 ? 'text-orange-500' :
+                          'text-gray-400'
+                        }`}>
+                          #{entry.rank}
+                        </span>
+                        <div>
+                          <span className="font-medium text-gray-900">
+                            {entry.nickname || 'Anonymous'}
+                          </span>
+                          <div className="text-xs text-gray-500 mt-1">
+                            Total Quizzes: {entry.stats.totalQuizzes} | 
+                            Avg. Score: {Math.round(entry.stats.averageScore)}%
+                          </div>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <span className="font-bold text-[#A7D129]">
+                          {Math.round(entry.stats.averageCorrectAnswersPercentage)}%
+                        </span>
+                        <div className="text-xs text-gray-500 mt-1">
+                          Correct Answers: {entry.stats.totalCorrectAnswers}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         )}
       </div>
