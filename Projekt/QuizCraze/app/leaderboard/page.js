@@ -6,6 +6,11 @@ import { FaTrophy, FaSpinner, FaMedal, FaStar, FaDownload } from 'react-icons/fa
 import { motion } from 'framer-motion';
 import { generatePDF } from '@react-pdf/renderer';
 
+
+axios.defaults.baseURL = 'http://localhost:4000/api';
+axios.defaults.withCredentials = true;
+
+
 export default function Leaderboard() {
   const [leaderboard, setLeaderboard] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -166,8 +171,8 @@ export default function Leaderboard() {
                   <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Rank</th>
                   <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Player</th>
                   <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Quizzes</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Avg. Score</th>
                   <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Accuracy</th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Avg. Score</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
@@ -193,11 +198,11 @@ export default function Leaderboard() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className="text-[#A7D129] font-semibold">
-                        {Math.round(player.stats.averageScore)}%
+                      {Math.round(player.stats.averageCorrectAnswersPercentage)}%
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-gray-900">
-                      {Math.round(player.stats.averageCorrectAnswersPercentage)}%
+                      {Math.round(player.stats.averageScore)}
                     </td>
                   </motion.tr>
                 ))}
