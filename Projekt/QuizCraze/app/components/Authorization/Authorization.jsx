@@ -1,18 +1,15 @@
 'use client'
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import Link from 'next/link';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
 
-
 // Configure axios
 axios.defaults.baseURL = 'http://localhost:4000/api';
 axios.defaults.withCredentials = true;
-
-
 
 // Validation schemas
 const RegistrationSchema = Yup.object().shape({
@@ -57,6 +54,12 @@ export default function Authorization({ isRegistering }) {
   const [googleUrl, setGoogleUrl] = useState('');
 
 
+  const firstNameRef = useRef(null);
+  const lastNameRef = useRef(null);
+  const emailRef = useRef(null);
+  const nicknameRef = useRef(null);
+  const passwordRef = useRef(null);
+  const formRef = useRef(null);
 
   const handleAuth = async (values) => {
     try {
@@ -76,7 +79,6 @@ export default function Authorization({ isRegistering }) {
         if (response.data.userData) {
           setSuccessMessage('User successfully registered:');
           router.push('/auth/login');
-          
         }
       } else {
         const response = await axios.post('/auth/login', {
@@ -86,12 +88,10 @@ export default function Authorization({ isRegistering }) {
 
         if (response.data.userData) {
           setSuccessMessage('User successfully logged in');
-          // Update auth state immediately
           setIsAuthenticated(true);
           localStorage.setItem('userId', response.data.userData._id);
           localStorage.setItem('isAuthenticated', 'true');
           localStorage.setItem('rootAccess', response.data.userData.rootAccess);
-          // Dispatch custom event
           window.dispatchEvent(new Event('authStateChange'));
           router.push('/');
         }
@@ -104,19 +104,24 @@ export default function Authorization({ isRegistering }) {
     }
   };
 
-
-
   useEffect(() => {
-      const getGoogleUrl = async () => {
-          const response = await axios.get("/auth/google");
-          setGoogleUrl(response.data.url);
-      };
-      getGoogleUrl();
-  }, []);
-  const signIn = async () => {
-      window.location.href = googleUrl;
-  };
+    const getGoogleUrl = async () => {
+      const response = await axios.get("/auth/google");
+      setGoogleUrl(response.data.url);
+    };
+    getGoogleUrl();
 
+    if (isRegistering) {
+      firstNameRef.current?.focus();
+    } else {
+      emailRef.current?.focus();
+    }
+  }, [isRegistering]);
+
+  
+  const signIn = async () => {
+    window.location.href = googleUrl;
+  };
 
   const formik = useFormik({
     initialValues: isRegistering ? {
@@ -182,7 +187,7 @@ export default function Authorization({ isRegistering }) {
               </div>
             )}
 
-            <form onSubmit={formik.handleSubmit} className="space-y-4">
+            <form ref={formRef} onSubmit={formik.handleSubmit} className="space-y-4">
               {isRegistering && (
                 <>
                   <div className="relative">
@@ -190,6 +195,7 @@ export default function Authorization({ isRegistering }) {
                       First Name
                     </label>
                     <input
+                      ref={firstNameRef}
                       id="firstName"
                       name="firstName"
                       type="text"
@@ -210,6 +216,7 @@ export default function Authorization({ isRegistering }) {
                       Last Name
                     </label>
                     <input
+                      ref={lastNameRef}
                       id="lastName"
                       name="lastName" 
                       type="text"
@@ -230,6 +237,7 @@ export default function Authorization({ isRegistering }) {
                       Nickname
                     </label>
                     <input
+                      ref={nicknameRef}
                       id="nickname"
                       name="nickname"
                       type="text"
@@ -252,6 +260,7 @@ export default function Authorization({ isRegistering }) {
                   Email
                 </label>
                 <input
+                  ref={emailRef}
                   id="email"
                   name="email"
                   type="email"
@@ -272,6 +281,7 @@ export default function Authorization({ isRegistering }) {
                   Password
                 </label>
                 <input
+                  ref={passwordRef}
                   id="password"
                   name="password"
                   type="password"
@@ -367,7 +377,6 @@ export default function Authorization({ isRegistering }) {
           </div>
         </div>
       </div>
-
     </div>
   );
 }

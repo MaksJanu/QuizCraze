@@ -149,7 +149,6 @@ export default function Dashboard() {
 
                 <div className="flex justify-between items-center text-sm text-gray-500">
                   <span>Questions: {quiz.questions?.length || 0}</span>
-                  <span>{new Date(quiz.createdAt).toLocaleDateString()}</span>
                 </div>
               </div>
             ))}
