@@ -4,6 +4,8 @@ import { useState, useEffect, useCallback } from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import axios from 'axios';
+import { motion } from 'framer-motion';
+
 
 axios.defaults.baseURL = 'http://localhost:4000/api';
 axios.defaults.withCredentials = true;
@@ -22,20 +24,31 @@ const validationSchema = Yup.object().shape({
 
 const ProfilePage = () => {
   const [user, setUser] = useState(null);
+  const [achievements, setAchievements] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [isEditingNickname, setIsEditingNickname] = useState(false);
   const [isEditingPersonalInfo, setIsEditingPersonalInfo] = useState(false);
+  
 
   const fetchUserData = useCallback(async (userId) => {
     try {
-      const response = await axios.get(`/user/${userId}?populate=quizzes,achievements`);
+      const response = await axios.get(`/user/${userId}`);
       setUser(response.data);
       return response.data;
     } catch (error) {
       console.error('Error fetching user data:', error);
       return null;
+    }
+  }, []);
+
+  const fetchAchievements = useCallback(async (userId) => {
+    try {
+      const response = await axios.get(`/user/${userId}/achievements`);
+      setAchievements(response.data);
+    } catch (error) {
+      console.error('Error fetching achievements:', error);
     }
   }, []);
 
@@ -106,8 +119,9 @@ const ProfilePage = () => {
     const userId = localStorage.getItem('userId');
     if (userId) {
       fetchUserData(userId);
+      fetchAchievements(userId);
     }
-  }, [fetchUserData]);
+  }, [fetchUserData, fetchAchievements]);
 
   const formik = useFormik({
     initialValues: {
@@ -381,6 +395,35 @@ const ProfilePage = () => {
                       </div>
                     </label>
                   </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Achievements Card */}
+            <div className="bg-white rounded-xl shadow-md overflow-hidden">
+              <div className="p-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Achievements</h3>
+                <div className="space-y-4">
+                  {achievements.length > 0 ? (
+                    achievements.map((achievement) => (
+                      <div key={achievement._id} className="flex items-center space-x-4 p-3 rounded-lg hover:bg-gray-50">
+                        <div className="flex-shrink-0 w-10 h-10 flex items-center justify-center rounded-full bg-[#A7D129]/10">
+                          <i className={`${achievement.icon} text-[#A7D129] text-xl`}>{achievement.icon}</i>
+                        </div>
+                        <div className="flex-1">
+                          <h4 className="text-sm font-medium text-gray-900">{achievement.name}</h4>
+                          <p className="text-xs text-gray-600">{achievement.description}</p>
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="flex items-center justify-center p-6 text-center">
+                      <div>
+                        <i className="fas fa-trophy text-gray-300 text-4xl mb-2"></i>
+                        <p className="text-sm text-gray-600">No achievements yet.</p>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

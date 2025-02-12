@@ -57,7 +57,6 @@ export default function Dashboard() {
   
       const response = await axios.delete(`/quiz/${quizId}`);
       if (response.status === 200) {
-        // Immediately update the local state
         setQuizzes(prevQuizzes => prevQuizzes.filter(quiz => quiz._id !== quizId));
         setDeleteError(null);
       } else {
@@ -68,14 +67,13 @@ export default function Dashboard() {
       setDeleteError(err.response?.data?.message || 'Failed to delete quiz');
     } finally {
       setDeletingId(null);
-      // Clear any error message after 3 seconds
       setTimeout(() => setDeleteError(null), 3000);
     }
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen bg-white flex items-center justify-center">
         <FaSpinner className="animate-spin text-4xl text-nav-primary" />
       </div>
     );

@@ -8,6 +8,7 @@ import "./Navigation.scss";
 
 export default function Navigation() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
 
@@ -19,12 +20,19 @@ export default function Navigation() {
     const checkAuth = () => {
       const authStatus = localStorage.getItem('isAuthenticated') === 'true';
       const userId = localStorage.getItem('userId');
+      const rootAccess = localStorage.getItem('rootAccess') === 'true';
       setIsAuthenticated(authStatus && userId);
+      setIsAdmin(rootAccess);
 
       // Protected routes check
-      const protectedRoutes = ['/explore', '/leaderboard'];
+      const protectedRoutes = ['/explore', '/leaderboard', '/admin'];
       if ((!authStatus || !userId) && protectedRoutes.some(route => pathname.startsWith(route))) {
         router.push('/auth/login');
+      }
+
+      // Admin routes check
+      if (pathname.startsWith('/admin') && !rootAccess) {
+        router.push('/');
       }
     };
 
@@ -46,7 +54,10 @@ export default function Navigation() {
       // First clear local storage and state
       localStorage.removeItem('userId');
       localStorage.removeItem('isAuthenticated');
+      localStorage.removeItem('rootAccess');
+
       setIsAuthenticated(false);
+      setIsAdmin(false);
       
       // Try to logout from server
       await axios.post('/auth/logout').catch(error => {
@@ -60,6 +71,7 @@ export default function Navigation() {
       console.error('Error during logout:', error);
       // Ensure user is logged out locally even if there's an error
       setIsAuthenticated(false);
+      setIsAdmin(false);
       router.push('/');
     }
   };
@@ -140,6 +152,14 @@ export default function Navigation() {
                   >
                     Dashboard
                   </Link>
+                  {isAdmin && (
+                    <Link 
+                      href="/admin"
+                      className="relative text-sm font-medium opacity-85 hover:opacity-100 transition-all duration-300 hover:text-[#A7D129] after:absolute after:bottom-0 after:left-0 after:w-0 hover:after:w-full after:h-0.5 after:bg-[#A7D129] after:transition-all after:duration-300"
+                    >
+                      Admin Panel
+                    </Link>
+                  )}
                   <button
                     onClick={handleLogout}
                     className="text-sm font-medium text-red-500 hover:text-red-400 transition-all duration-300 hover:scale-105"

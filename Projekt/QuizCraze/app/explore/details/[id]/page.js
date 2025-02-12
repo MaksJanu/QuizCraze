@@ -4,29 +4,28 @@ import { useParams, useRouter } from 'next/navigation';
 import axios from 'axios';
 import { FaPlay, FaSpinner, FaTrash } from 'react-icons/fa';
 
-// Define action types
 const ACTIONS = {
   SET_LOADING: 'SET_LOADING',
   SET_ERROR: 'SET_ERROR',
   SET_QUIZ: 'SET_QUIZ',
   SET_USER_ID: 'SET_USER_ID',
+  SET_ROOT_ACCESS: 'SET_ROOT_ACCESS',
   SET_NEW_COMMENT: 'SET_NEW_COMMENT',
   SET_IS_SUBMITTING: 'SET_IS_SUBMITTING',
   ADD_COMMENT: 'ADD_COMMENT',
   DELETE_COMMENT: 'DELETE_COMMENT'
 };
 
-// Initial state
 const initialState = {
   quiz: null,
   loading: true,
   error: null,
   newComment: '',
   isSubmitting: false,
-  userId: null
+  userId: null,
+  rootAccess: false
 };
 
-// Reducer function
 function reducer(state, action) {
   switch (action.type) {
     case ACTIONS.SET_LOADING:
@@ -37,6 +36,8 @@ function reducer(state, action) {
       return { ...state, quiz: action.payload };
     case ACTIONS.SET_USER_ID:
       return { ...state, userId: action.payload };
+    case ACTIONS.SET_ROOT_ACCESS:
+      return { ...state, rootAccess: action.payload };
     case ACTIONS.SET_NEW_COMMENT:
       return { ...state, newComment: action.payload };
     case ACTIONS.SET_IS_SUBMITTING:
@@ -72,7 +73,9 @@ export default function QuizDetails() {
       try {
         dispatch({ type: ACTIONS.SET_LOADING, payload: true });
         const currentUserId = localStorage.getItem('userId');
+        const rootAccess = localStorage.getItem('rootAccess') === 'true';
         dispatch({ type: ACTIONS.SET_USER_ID, payload: currentUserId });
+        dispatch({ type: ACTIONS.SET_ROOT_ACCESS, payload: rootAccess });
         const response = await axios.get(`/quiz/${params.id}`);
         dispatch({ type: ACTIONS.SET_QUIZ, payload: response.data.data });
       } catch (err) {
@@ -207,10 +210,11 @@ export default function QuizDetails() {
                 </div>
                 <p className="text-sm text-gray-700">{comment.content}</p>
               </div>
-              {comment.userId?._id === state.userId && (
+              {(comment.userId?._id === state.userId || state.rootAccess) && (
                 <button
                   onClick={() => handleDeleteComment(comment._id)}
                   className="text-red-500 hover:text-red-700 transition-colors"
+                  title={state.rootAccess && comment.userId?._id !== state.userId ? "Admin delete" : "Delete your comment"}
                 >
                   <FaTrash />
                 </button>

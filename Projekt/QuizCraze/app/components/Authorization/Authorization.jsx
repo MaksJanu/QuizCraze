@@ -90,6 +90,7 @@ export default function Authorization({ isRegistering }) {
           setIsAuthenticated(true);
           localStorage.setItem('userId', response.data.userData._id);
           localStorage.setItem('isAuthenticated', 'true');
+          localStorage.setItem('rootAccess', response.data.userData.rootAccess);
           // Dispatch custom event
           window.dispatchEvent(new Event('authStateChange'));
           router.push('/');

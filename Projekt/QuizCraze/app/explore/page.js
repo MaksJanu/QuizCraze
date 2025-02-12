@@ -1,13 +1,12 @@
 'use client';
 
-import { useReducer, useEffect } from 'react';
+import { useReducer, useEffect, useState } from 'react';
 import axios from 'axios';
-import { FaSearch, FaSpinner, FaUndo } from 'react-icons/fa';
+import { FaSearch, FaSpinner, FaUndo, FaTrash } from 'react-icons/fa';
 import { useRouter } from 'next/navigation';
 
 axios.defaults.baseURL = 'http://localhost:4000/api';
 axios.defaults.withCredentials = true;
-
 
 const ACTIONS = {
   SET_LOADING: 'SET_LOADING',
@@ -19,9 +18,9 @@ const ACTIONS = {
   SET_SELECTED_CATEGORY: 'SET_SELECTED_CATEGORY',
   SET_SELECTED_DIFFICULTY: 'SET_SELECTED_DIFFICULTY',
   SET_SELECTED_POPULARITY: 'SET_SELECTED_POPULARITY',
-  RESET_FILTERS: 'RESET_FILTERS'
+  RESET_FILTERS: 'RESET_FILTERS',
+  DELETE_QUIZ: 'DELETE_QUIZ'
 };
-
 
 const initialState = {
   quizzes: [],
@@ -34,7 +33,6 @@ const initialState = {
   selectedDifficulty: '',
   selectedPopularity: '',
 };
-
 
 function reducer(state, action) {
   switch (action.type) {
@@ -64,6 +62,12 @@ function reducer(state, action) {
         selectedDifficulty: '',
         selectedPopularity: ''
       };
+    case ACTIONS.DELETE_QUIZ:
+      return {
+        ...state,
+        quizzes: state.quizzes.filter(quiz => quiz._id !== action.payload),
+        filteredQuizzes: state.filteredQuizzes.filter(quiz => quiz._id !== action.payload)
+      };
     default:
       return state;
   }
@@ -71,13 +75,32 @@ function reducer(state, action) {
 
 export default function ExplorePage() {
   const [state, dispatch] = useReducer(reducer, initialState);
+  const [isAdmin, setIsAdmin] = useState(false);
   const router = useRouter();
 
   const difficulties = ['Easy', 'Medium', 'Hard'];
   const popularityOptions = ['Most Popular'];
 
+  useEffect(() => {
+    setIsAdmin(localStorage.getItem('rootAccess') === 'true');
+  }, []);
+
   const resetFilters = () => {
     dispatch({ type: ACTIONS.RESET_FILTERS });
+  };
+
+  const handleDelete = async (e, quizId) => {
+    e.stopPropagation();
+    if (!window.confirm('Are you sure you want to delete this quiz?')) {
+      return;
+    }
+    try {
+      await axios.delete(`/quiz/${quizId}`);
+      dispatch({ type: ACTIONS.DELETE_QUIZ, payload: quizId });
+    } catch (err) {
+      console.error('Error deleting quiz:', err);
+      alert('Failed to delete quiz');
+    }
   };
 
   const isPopular = (quiz, filteredQuizzes, selectedPopularity) => {
@@ -270,6 +293,18 @@ export default function ExplorePage() {
                       🔥 Popular
                     </div>
                   )}
+
+                  {isAdmin && (
+                    <button
+                      onClick={(e) => handleDelete(e, quiz._id)}
+                      className="absolute top-2 right-2 p-2 text-red-500 hover:text-red-700 
+                        transition-colors duration-200"
+                      title="Delete quiz"
+                    >
+                      <FaTrash className="w-4 h-4" />
+                    </button>
+                  )}
+
                   <h2 className="text-sm font-semibold text-gray-900 mb-2">{quiz.name}</h2>
                   <div className="mb-2">
                     <p className="text-xs text-gray-600">{quiz.category?.name}</p>
