@@ -11,7 +11,7 @@ export default function BasicBreadcrumbs() {
   const pathnames = pathname.split('/').filter((x) => x);
 
   return (
-    <div className="bg-[#f6f7f6] shadow-sm py-3 px-4 sm:px-6 lg:px-8">
+    <div className="bg-[#f8fafc] shadow-sm py-3 px-4 sm:px-6 lg:px-8">
       <Breadcrumbs
         aria-label="breadcrumbs"
         sx={{

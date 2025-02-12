@@ -3,38 +3,24 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { FaUsers, FaQuora, FaChartLine, FaSpinner, FaTrash } from 'react-icons/fa';
+import useFetch from '../hooks/useFetch';
 
 axios.defaults.baseURL = 'http://localhost:4000/api';
 axios.defaults.withCredentials = true;
 
 export default function AdminDashboard() {
+  const { data: usersData, loading: usersLoading, error: usersError } = useFetch('/user/all');
+  const { data: quizzesData, loading: quizzesLoading, error: quizzesError } = useFetch('/quiz/all');
+
   const [users, setUsers] = useState([]);
   const [quizzes, setQuizzes] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [selectedUser, setSelectedUser] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState(null);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [usersRes, quizzesRes] = await Promise.all([
-          axios.get('/user/all'),
-          axios.get('/quiz/all')
-        ]);
-        setUsers(usersRes.data.data || []);
-        setQuizzes(quizzesRes.data.data || []);
-      } catch (err) {
-        setError(err.response?.data?.message || 'Failed to fetch data');
-        console.error('Error:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, []);
+    if (usersData) setUsers(usersData.data || []);
+    if (quizzesData) setQuizzes(quizzesData.data || []);
+  }, [usersData, quizzesData]);
 
   const handleDeleteUser = async (userId) => {
     if (!window.confirm('Are you sure you want to delete this user?')) {
@@ -55,7 +41,7 @@ export default function AdminDashboard() {
     }
   };
 
-  if (loading) {
+  if (usersLoading || quizzesLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <FaSpinner className="animate-spin text-4xl text-[#A7D129]" />
@@ -63,12 +49,12 @@ export default function AdminDashboard() {
     );
   }
 
-  if (error) {
+  if (usersError || quizzesError) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-red-500 text-center">
           <p className="text-xl font-semibold mb-2">Error</p>
-          <p>{error}</p>
+          <p>{usersError?.message || quizzesError?.message}</p>
         </div>
       </div>
     );

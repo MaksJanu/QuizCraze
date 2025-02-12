@@ -139,7 +139,7 @@ export default function Authorization({ isRegistering }) {
   });
 
   return (
-    <div className="min-h-screen relative bg-gradient-to-br from-gray-50 to-gray-100">
+    <div className="min-h-screen relative bg-[#f8fafc]">
       <div className="absolute inset-0 z-0 overflow-hidden">
         <div 
           className="absolute inset-0 bg-gradient-to-br from-[#A7D129]/5 via-transparent to-[#8CB122]/5"

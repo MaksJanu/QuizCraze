@@ -72,7 +72,7 @@ export default function Question({ onSubmit, existingQuestion = null }) {
   const handleAnswerSelect = (index) => {
     const currentAnswers = [...formik.values.answers];
     if (questionType === 'Single Choice') {
-      // For Single Choice: only one answer can be correct
+      // For Single Choice: only one answer is correct
       currentAnswers.forEach((answer, i) => {
         answer.isCorrect = i === index;
       });
