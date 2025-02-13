@@ -24,6 +24,8 @@ export default function GoogleLoginHandler() {
 
                     if (res.data.userData) {
                         localStorage.setItem('isAuthenticated', 'true');
+                        localStorage.setItem('userId', res.data.userData._id);
+                        localStorage.setItem('rootAccess', res.data.userData.rootAccess);
                         window.dispatchEvent(new Event('authStateChange'));
                         router.push('/');
                     }
