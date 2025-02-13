@@ -1,11 +1,9 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import axios from 'axios';
-import { motion } from 'framer-motion';
-
 
 axios.defaults.baseURL = 'http://localhost:4000/api';
 axios.defaults.withCredentials = true;
@@ -30,7 +28,6 @@ const ProfilePage = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const [isEditingNickname, setIsEditingNickname] = useState(false);
   const [isEditingPersonalInfo, setIsEditingPersonalInfo] = useState(false);
-  
 
   const fetchUserData = useCallback(async (userId) => {
     try {
@@ -134,6 +131,19 @@ const ProfilePage = () => {
     onSubmit: handleSubmit
   });
 
+  const userStats = useMemo(() => {
+    if (!user) return null;
+
+    const totalQuizzes = user.quizzes?.length || 0;
+    const totalAchievements = user.achievements?.length || 0;
+
+    return {
+      totalQuizzes,
+      totalAchievements,
+      memberSince: new Date(user.createdAt).toLocaleDateString()
+    };
+  }, [user]);
+
   if (!user) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-8 px-4 sm:px-6 lg:px-8">
@@ -164,16 +174,16 @@ const ProfilePage = () => {
                     <div className="flex justify-between">
                       <span className="text-gray-600">Member since:</span>
                       <span className="font-medium">
-                        {new Date(user.createdAt).toLocaleDateString()}
+                        {userStats.memberSince}
                       </span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-600">Quizzes created:</span>
-                      <span className="font-medium">{user.quizzes?.length || 0}</span>
+                      <span className="font-medium">{userStats.totalQuizzes}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-600">Achievements:</span>
-                      <span className="font-medium">{user.achievements?.length || 0}</span>
+                      <span className="font-medium">{userStats.totalAchievements}</span>
                     </div>
                   </div>
                 </div>
@@ -203,148 +213,147 @@ const ProfilePage = () => {
                   </div>
                 )}
 
-
                 <form onSubmit={formik.handleSubmit} className="space-y-4">
-                    {/* Email Section */}
-                    <div className="bg-gray-50 rounded-lg p-3">
-                        <div className="flex items-center justify-between">
-                        <div>
-                            <h3 className="text-sm font-medium text-gray-900">Email Address</h3>
-                            <p className="text-xs text-gray-600">{user.email}</p>
-                        </div>
-                        </div>
+                  {/* Email Section */}
+                  <div className="bg-gray-50 rounded-lg p-3">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h3 className="text-sm font-medium text-gray-900">Email Address</h3>
+                        <p className="text-xs text-gray-600">{user.email}</p>
+                      </div>
                     </div>
+                  </div>
 
-                    {/* Nickname Section */}
-                    <div className="bg-gray-50 rounded-lg p-3">
-                        <div className="flex items-center justify-between mb-2">
-                        <div>
-                            <h3 className="text-sm font-medium text-gray-900">Nickname</h3>
-                            {!isEditingNickname && (
-                            <p className="text-xs text-gray-600">{user.nickname}</p>
-                            )}
-                        </div>
-                        {!isEditingNickname ? (
-                            <button
-                            type="button"
-                            onClick={() => setIsEditingNickname(true)}
-                            className="text-xs text-[#A7D129] hover:text-[#8fb122] font-medium"
-                            >
-                            Edit
-                            </button>
-                        ) : (
-                            <div className="flex space-x-2">
-                            <button
-                                type="button"
-                                onClick={handleCancelNickname}
-                                className="text-xs text-gray-500 hover:text-gray-700 font-medium"
-                            >
-                                Cancel
-                            </button>
-                            <button
-                                type="submit"
-                                disabled={isLoading}
-                                className="text-xs text-[#A7D129] hover:text-[#8fb122] font-medium"
-                            >
-                                Save
-                            </button>
-                            </div>
+                  {/* Nickname Section */}
+                  <div className="bg-gray-50 rounded-lg p-3">
+                    <div className="flex items-center justify-between mb-2">
+                      <div>
+                        <h3 className="text-sm font-medium text-gray-900">Nickname</h3>
+                        {!isEditingNickname && (
+                          <p className="text-xs text-gray-600">{user.nickname}</p>
                         )}
+                      </div>
+                      {!isEditingNickname ? (
+                        <button
+                          type="button"
+                          onClick={() => setIsEditingNickname(true)}
+                          className="text-xs text-[#A7D129] hover:text-[#8fb122] font-medium"
+                        >
+                          Edit
+                        </button>
+                      ) : (
+                        <div className="flex space-x-2">
+                          <button
+                            type="button"
+                            onClick={handleCancelNickname}
+                            className="text-xs text-gray-500 hover:text-gray-700 font-medium"
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            type="submit"
+                            disabled={isLoading}
+                            className="text-xs text-[#A7D129] hover:text-[#8fb122] font-medium"
+                          >
+                            Save
+                          </button>
                         </div>
-                        {isEditingNickname && (
+                      )}
+                    </div>
+                    {isEditingNickname && (
+                      <div>
+                        <input
+                          type="text"
+                          id="nickname"
+                          name="nickname"
+                          value={formik.values.nickname}
+                          onChange={formik.handleChange}
+                          onBlur={formik.handleBlur}
+                          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm bg-white px-4 py-2.5
+                            focus:border-[#A7D129] focus:ring-[#A7D129] sm:text-sm"
+                        />
+                        {formik.touched.nickname && formik.errors.nickname && (
+                          <div className="text-red-500 text-xs mt-1">{formik.errors.nickname}</div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Personal Info Section */}
+                  <div className="bg-gray-50 rounded-lg p-3">
+                    <div className="flex items-center justify-between mb-2">
+                      <div>
+                        <h3 className="text-sm font-medium text-gray-900">Personal Information</h3>
+                        {!isEditingPersonalInfo && (
+                          <p className="text-xs text-gray-600">
+                            {user.firstName} {user.lastName}
+                          </p>
+                        )}
+                      </div>
+                      {!isEditingPersonalInfo ? (
+                        <button
+                          type="button"
+                          onClick={() => setIsEditingPersonalInfo(true)}
+                          className="text-xs text-[#A7D129] hover:text-[#8fb122] font-medium"
+                        >
+                          Edit
+                        </button>
+                      ) : (
+                        <div className="flex space-x-2">
+                          <button
+                            type="button"
+                            onClick={handleCancelPersonalInfo}
+                            className="text-xs text-gray-500 hover:text-gray-700 font-medium"
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            type="submit"
+                            disabled={isLoading}
+                            className="text-xs text-[#A7D129] hover:text-[#8fb122] font-medium"
+                          >
+                            Save
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                    {isEditingPersonalInfo && (
+                      <div className="space-y-3">
                         <div>
-                            <input
+                          <input
                             type="text"
-                            id="nickname"
-                            name="nickname"
-                            value={formik.values.nickname}
+                            id="firstName"
+                            name="firstName"
+                            placeholder="First Name"
+                            value={formik.values.firstName}
                             onChange={formik.handleChange}
                             onBlur={formik.handleBlur}
                             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm bg-white px-4 py-2.5
-                                focus:border-[#A7D129] focus:ring-[#A7D129] sm:text-sm"
-                            />
-                            {formik.touched.nickname && formik.errors.nickname && (
-                            <div className="text-red-500 text-xs mt-1">{formik.errors.nickname}</div>
-                            )}
+                              focus:border-[#A7D129] focus:ring-[#A7D129] sm:text-sm"
+                          />
+                          {formik.touched.firstName && formik.errors.firstName && (
+                            <div className="text-red-500 text-xs mt-1">{formik.errors.firstName}</div>
+                          )}
                         </div>
-                        )}
-                    </div>
-
-                    {/* Personal Info Section */}
-                    <div className="bg-gray-50 rounded-lg p-3">
-                        <div className="flex items-center justify-between mb-2">
                         <div>
-                            <h3 className="text-sm font-medium text-gray-900">Personal Information</h3>
-                            {!isEditingPersonalInfo && (
-                            <p className="text-xs text-gray-600">
-                                {user.firstName} {user.lastName}
-                            </p>
-                            )}
+                          <input
+                            type="text"
+                            id="lastName"
+                            name="lastName"
+                            placeholder="Last Name"
+                            value={formik.values.lastName}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm bg-white px-4 py-2.5
+                              focus:border-[#A7D129] focus:ring-[#A7D129] sm:text-sm"
+                          />
+                          {formik.touched.lastName && formik.errors.lastName && (
+                            <div className="text-red-500 text-xs mt-1">{formik.errors.lastName}</div>
+                          )}
                         </div>
-                        {!isEditingPersonalInfo ? (
-                            <button
-                            type="button"
-                            onClick={() => setIsEditingPersonalInfo(true)}
-                            className="text-xs text-[#A7D129] hover:text-[#8fb122] font-medium"
-                            >
-                            Edit
-                            </button>
-                        ) : (
-                            <div className="flex space-x-2">
-                            <button
-                                type="button"
-                                onClick={handleCancelPersonalInfo}
-                                className="text-xs text-gray-500 hover:text-gray-700 font-medium"
-                            >
-                                Cancel
-                            </button>
-                            <button
-                                type="submit"
-                                disabled={isLoading}
-                                className="text-xs text-[#A7D129] hover:text-[#8fb122] font-medium"
-                            >
-                                Save
-                            </button>
-                            </div>
-                        )}
-                        </div>
-                        {isEditingPersonalInfo && (
-                        <div className="space-y-3">
-                            <div>
-                                <input
-                                type="text"
-                                id="firstName"
-                                name="firstName"
-                                placeholder="First Name"
-                                value={formik.values.firstName}
-                                onChange={formik.handleChange}
-                                onBlur={formik.handleBlur}
-                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm bg-white px-4 py-2.5
-                                    focus:border-[#A7D129] focus:ring-[#A7D129] sm:text-sm"
-                                />
-                                {formik.touched.firstName && formik.errors.firstName && (
-                                    <div className="text-red-500 text-xs mt-1">{formik.errors.firstName}</div>
-                                )}
-                            </div>
-                            <div>
-                                <input
-                                type="text"
-                                id="lastName"
-                                name="lastName"
-                                placeholder="Last Name"
-                                value={formik.values.lastName}
-                                onChange={formik.handleChange}
-                                onBlur={formik.handleBlur}
-                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm bg-white px-4 py-2.5
-                                    focus:border-[#A7D129] focus:ring-[#A7D129] sm:text-sm"
-                                />
-                                {formik.touched.lastName && formik.errors.lastName && (
-                                    <div className="text-red-500 text-xs mt-1">{formik.errors.lastName}</div>
-                                )}
-                            </div>
-                        </div>
-                        )}
-                    </div>
+                      </div>
+                    )}
+                  </div>
                 </form>
               </div>
             </div>

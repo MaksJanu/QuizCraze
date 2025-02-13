@@ -61,6 +61,7 @@ export default function Authorization({ isRegistering }) {
   const passwordRef = useRef(null);
   const formRef = useRef(null);
 
+
   const handleAuth = async (values) => {
     try {
       setIsLoading(true);
@@ -77,8 +78,10 @@ export default function Authorization({ isRegistering }) {
         });
 
         if (response.data.userData) {
-          setSuccessMessage('User successfully registered:');
-          router.push('/auth/login');
+          setSuccessMessage('User successfully registered');
+          setTimeout(() => {
+            router.push('/auth/login');
+          }, 2000);
         }
       } else {
         const response = await axios.post('/auth/login', {
@@ -103,6 +106,7 @@ export default function Authorization({ isRegistering }) {
       setIsLoading(false);
     }
   };
+
 
   useEffect(() => {
     const getGoogleUrl = async () => {
