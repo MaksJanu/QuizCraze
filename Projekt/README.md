@@ -1,1 +1,0 @@
-# quiz-craze-app
