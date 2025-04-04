@@ -30,7 +30,7 @@ The project was developed using the following technologies:
 - **Others**:
   - DaisyUI: UI components based on Tailwind CSS.
 
-## Project Structure
+## 🧬 Project Structure
 
 ```
 QuizCraze/
@@ -51,7 +51,7 @@ QuizCraze/
 └── README.md           # Project documentation
 ```
 
-## Screenshots
+## 📷 Screenshots
 
 ### Home Page
 ![Home Page](public/images/welcome_page.png)
