@@ -1,10 +1,10 @@
 # QuizCraze
 
-## Project Description
+## 📄 Project Description
 
 QuizCraze is an interactive quiz application that allows users to test their knowledge in various categories. The project was created to provide entertainment and education in a user-friendly environment. The application offers a single-player mode.
 
-## Features
+## 💡 Features
 
 - **Creating and managing quizzes**: Users can create and manage their own quizzes.
 - **Various question categories**: Aviation, F1, animals, and many more.
@@ -15,7 +15,7 @@ QuizCraze is an interactive quiz application that allows users to test their kno
 - **Admin panel**: Manage content and users (for administrators).
 - **User authentication**: Traditional login and registration using email and password with email verification via a code. There is also an option to log in using Google (OAuth2.0).
 
-## Technologies
+## 🛠️ Technologies
 
 The project was developed using the following technologies:
 
