@@ -74,6 +74,6 @@ QuizCraze/
 ### User Profile View
 ![User Profile Panel](public/images/profile_page.png)
 
-## Authors
+## 👨‍💻 Authors
 
 - **MaksJanu** - [GitHub](https://github.com/MaksJanu)
